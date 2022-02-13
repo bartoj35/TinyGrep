@@ -5,7 +5,6 @@ use std::process;
 use tiny_grep::Config;
 use tiny_grep::run;
 
-
 fn main() {
 	let arguments: Vec<String> = env::args().collect();
 	let config = Config::new(&arguments)
@@ -15,7 +14,10 @@ fn main() {
 		});
 
 	if let Err(error) = run(config) {
-		println!("Application error: {}", error);
+		eprintln!(
+			"Application error: {}", 
+			error
+		);
 		process::exit(1);
 	}
 }

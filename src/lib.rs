@@ -1,3 +1,4 @@
+use std::env;
 use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;
@@ -5,6 +6,7 @@ use std::io::prelude::*;
 pub struct Config {
     pub query: String,
     pub filename: String,
+	pub case_sensitivity: bool,
 }
 
 impl Config {
@@ -14,10 +16,16 @@ impl Config {
         }
 
         let query = arguments[1].clone();
-        let filename = arguments[2].clone();
-        // clone makes it more straightforward, we don't have to worry about lifetime
+        let filename = arguments[2].clone(); 
+		// clone makes it more straightforward, we don't have to worry about lifetime
 
-        Ok(Config { query, filename })
+		let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
+
+        Ok(Config {
+			query: query,
+			filename: filename,
+			case_sensitivity: case_sensitive,
+		 })
     }
 }
 
@@ -29,7 +37,13 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let mut content = String::new();
     file.read_to_string(&mut content)?;
 
-	for line in search(&config.query, &content) {
+	let res = if config.case_sensitivity {
+		search(&config.query, &content)
+	} else {
+		search_case_insensitive(&config.query, &content)
+	};
+
+	for line in res {
 		println!("{}", line);
 	}
     
