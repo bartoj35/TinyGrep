@@ -1,6 +1,9 @@
+extern crate tiny_grep;
+
 use std::env;
 use std::process;
-
+use tiny_grep::Config;
+use tiny_grep::run;
 
 
 fn main() {
@@ -11,9 +14,6 @@ fn main() {
 			process::exit(1);
 		});
 
-	println!("Searching for: {}", config.query);
-	println!("In file: {}", config.filename);
-	
 	if let Err(error) = run(config) {
 		println!("Application error: {}", error);
 		process::exit(1);
